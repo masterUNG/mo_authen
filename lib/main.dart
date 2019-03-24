@@ -78,7 +78,7 @@ class _HomePageState extends State<HomePage> {
         print('You Click SignUp');
         var registerRoute = new MaterialPageRoute(
             builder: (BuildContext context) => RegisterPage());
-            Navigator.of(context).push(registerRoute);
+        Navigator.of(context).push(registerRoute);
       },
     );
   }
@@ -111,14 +111,17 @@ class _HomePageState extends State<HomePage> {
             Container(
               margin: EdgeInsets.only(left: 50.0, right: 50.0, top: 20.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  Container(
-                    alignment: Alignment.centerRight,
-                    child: signInButton(),
+                  new Expanded(
+                    child: Container(
+                      child: signInButton(),
+                    ),
                   ),
-                  Container(
-                    child: signUpButton(context),
+                  new Expanded(
+                    child: Container(
+                      child: signUpButton(context),
+                    ),
                   )
                 ],
               ),
