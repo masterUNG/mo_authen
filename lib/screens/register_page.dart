@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' show get;
+import 'dart:convert';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -7,6 +9,7 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final formKey = GlobalKey<FormState>();
+  String nameString, emailString, passwordString;
 
   Widget nameTextField() {
     return TextFormField(
@@ -15,6 +18,9 @@ class _RegisterPageState extends State<RegisterPage> {
         if (value.length == 0) {
           return 'Please Fill Name ?';
         }
+      },
+      onSaved: (String value) {
+        nameString = value.trim();
       },
     );
   }
@@ -28,6 +34,9 @@ class _RegisterPageState extends State<RegisterPage> {
           return 'Please Fill Email Format you@email.com';
         }
       },
+      onSaved: (String value) {
+        emailString = value.trim();
+      },
     );
   }
 
@@ -40,14 +49,28 @@ class _RegisterPageState extends State<RegisterPage> {
           return 'Please Type Password more 6 Charator';
         }
       },
+      onSaved: (String value) {
+        passwordString = value.trim();
+      },
     );
   }
 
-  void sentValueToServer(
-      BuildContext context, String name, String email, String passowrd) {
+  void sentValueToServer(BuildContext context) async {
     print('sentValue Work');
-
     print(formKey.currentState.validate());
+
+    if (formKey.currentState.validate()) {
+      formKey.currentState.save();
+      String urlString =
+          'https://www.androidthai.in.th/mo/addDataMaster.php?isAdd=true&Name=$nameString&User=$emailString&Password=$passwordString';
+      print(urlString);
+      var response = await get(urlString);
+      var result = json.decode(response.body);
+      print('result ==> $result');
+      if (result.toString() == 'true') {
+        Navigator.pop(context);
+      }
+    }
   }
 
   @override
@@ -63,7 +86,7 @@ class _RegisterPageState extends State<RegisterPage> {
               icon: Icon(Icons.cloud_upload),
               onPressed: () {
                 print('You click Upload');
-                sentValueToServer(context, 'test', 'test', 'test');
+                sentValueToServer(context);
               },
             )
           ],
