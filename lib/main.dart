@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'screens/register_page.dart';
 import 'package:http/http.dart' show get;
 import 'dart:convert';
+import 'models/user_model.dart';
+import 'screens/service.dart';
 
 // void main() {
 //   runApp(App());
@@ -26,6 +28,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final formKey = GlobalKey<FormState>();
+  final myScaffold = GlobalKey<ScaffoldState>();
   String email, password;
 
   Widget showLogo() {
@@ -94,11 +97,48 @@ class _HomePageState extends State<HomePage> {
     if (formKey.currentState.validate()) {
       formKey.currentState.save();
       print('email = $email, password = $password');
-      String url = 'https://www.androidthai.in.th/mo/getUserWhereUserMaster.php?isAdd=true&User=$email';
-      var response =await get(url);
-      var result =json.decode(response.body);
+      String url =
+          'https://www.androidthai.in.th/mo/getUserWhereUserMaster.php?isAdd=true&User=$email';
+      var response = await get(url);
+      var result = json.decode(response.body);
       print('result => $result');
-    }
+      if (result.toString() == 'null') {
+        showSnackBar('User False Plase Try again');
+      } else {
+        String truePassword = "";
+        String nameString = "";
+        for (var data in result) {
+          print('data => $data');
+          var userModel = UserModel.fromJson(data);
+          truePassword = userModel.password.toString();
+          nameString = userModel.name.toString();
+
+          if (password == truePassword) {
+            // Password True
+            showSnackBar('Welcome $nameString');
+
+            var serviceRoute = new MaterialPageRoute(
+                builder: (BuildContext context) => Service(
+                      nameLoginString: nameString,
+                    ));
+            Navigator.of(context).push(serviceRoute);
+          } else {
+            // Password False
+            showSnackBar('Please Try Again Password False');
+          }
+        }
+      }
+    } // if1
+  }
+
+  void showSnackBar(String message) {
+    print(message);
+    final snackBar = new SnackBar(
+      duration: new Duration(seconds: 5),
+      backgroundColor: Colors.red[900],
+      content: Text(message),
+    );
+    myScaffold.currentState.showSnackBar(snackBar);
   }
 
   Widget signUpButton(BuildContext context) {
@@ -123,6 +163,7 @@ class _HomePageState extends State<HomePage> {
     return Form(
       key: formKey,
       child: Scaffold(
+        key: myScaffold,
         body: Container(
           decoration: BoxDecoration(
               gradient: LinearGradient(
