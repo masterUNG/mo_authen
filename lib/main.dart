@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/register_page.dart';
+import 'package:http/http.dart' show get;
+import 'dart:convert';
 
 // void main() {
 //   runApp(App());
@@ -49,8 +51,9 @@ class _HomePageState extends State<HomePage> {
         if (!value.contains('@')) {
           return 'Please Type Email Format you@email.com';
         }
-      },onSaved: (String value) {
-        email =value;
+      },
+      onSaved: (String value) {
+        email = value;
       },
     );
   }
@@ -64,8 +67,9 @@ class _HomePageState extends State<HomePage> {
         if (value.length <= 5) {
           return 'Please Type Password more 6 Charator';
         }
-      },onSaved: (String value) {
-        password =value;
+      },
+      onSaved: (String value) {
+        password = value;
       },
     );
   }
@@ -85,11 +89,15 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void checkAuthen(BuildContext context) {
+  void checkAuthen(BuildContext context) async {
     print(formKey.currentState.validate());
     if (formKey.currentState.validate()) {
       formKey.currentState.save();
       print('email = $email, password = $password');
+      String url = 'https://www.androidthai.in.th/mo/getUserWhereUserMaster.php?isAdd=true&User=$email';
+      var response =await get(url);
+      var result =json.decode(response.body);
+      print('result => $result');
     }
   }
 
